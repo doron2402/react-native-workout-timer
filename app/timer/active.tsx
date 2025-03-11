@@ -1,11 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Vibration, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Audio } from 'expo-av';
 import BackButton from '../../components/BackButton';
 
 const ActiveTimerScreen = () => {
   const router = useRouter();
   const { sets, setDuration, breakTime } = useLocalSearchParams();
+  const [breakStartSound, setBreakStartSound] = useState<Audio.Sound | null>(null);
+  const [breakEndSound, setBreakEndSound] = useState<Audio.Sound | null>(null);
+
+  // Load sounds when component mounts
+  useEffect(() => {
+    const loadSounds = async () => {
+      try {
+        const { sound: startSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/break-start.mp3'),
+          { shouldPlay: false }
+        );
+        setBreakStartSound(startSound);
+
+        const { sound: endSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/break-end.mp3'),
+          { shouldPlay: false }
+        );
+        setBreakEndSound(endSound);
+      } catch (error) {
+        console.error('Error loading sounds', error);
+      }
+    };
+
+    loadSounds();
+
+    // Cleanup sounds when component unmounts
+    return () => {
+      if (breakStartSound) {
+        breakStartSound.unloadAsync();
+      }
+      if (breakEndSound) {
+        breakEndSound.unloadAsync();
+      }
+    };
+  }, []);
+
+  const playBreakStartSound = async () => {
+    try {
+      if (breakStartSound) {
+        await breakStartSound.replayAsync();
+      }
+    } catch (error) {
+      console.error('Error playing break start sound', error);
+    }
+  };
+
+  const playBreakEndSound = async () => {
+    try {
+      if (breakEndSound) {
+        await breakEndSound.replayAsync();
+      }
+    } catch (error) {
+      console.error('Error playing break end sound', error);
+    }
+  };
 
   const [currentSet, setCurrentSet] = useState(1);
   const [timeLeft, setTimeLeft] = useState(Number(setDuration));
@@ -28,16 +84,19 @@ const ActiveTimerScreen = () => {
     } else {
       if (isBreak) {
         if (currentSet >= Number(sets)) {
-          router.replace('/timer/completion'); // Move to completion screen
+          router.replace('/timer/completion');
         } else {
           setIsBreak(false);
           setTimeLeft(Number(setDuration));
           setCurrentSet((prevSet) => prevSet + 1);
+          playBreakEndSound(); // Play sound when break ends
+          Vibration.vibrate();
         }
       } else {
         setIsBreak(true);
         setTimeLeft(Number(breakTime));
-        Vibration.vibrate(); // Vibrate when entering break time
+        playBreakStartSound(); // Play sound when break starts
+        Vibration.vibrate();
       }
     }
   }, [timeLeft, isBreak, currentSet]);
@@ -50,6 +109,7 @@ const ActiveTimerScreen = () => {
       <Text style={styles.subtitle}>{isBreak ? 'Rest Time' : "It's Workout Time! Keep Pushing"}</Text>
       <View style={styles.timeInfoContainer}>
         <Text style={styles.timeInfo}>Time Passed: {Math.floor(totalTimePassed / 60)}:{(totalTimePassed % 60).toString().padStart(2, '0')}</Text>
+        <Text style={styles.timeInfo}>Time Left: {Math.floor(totalTimeLeft / 60)}:{(totalTimeLeft % 60).toString().padStart(2, '0')}</Text>
       </View>
     </View>
   );

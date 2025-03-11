@@ -8,9 +8,6 @@ const CompletionScreen = () => {
   const router = useRouter();
   const { sets, setDuration, breakTime } = useLocalSearchParams();
 
-  const handleClose = () => {
-    router.replace('/'); // Navigate back to home screen
-  };
 
   // Function to save completed timer to AsyncStorage
   const saveToHistory = async () => {
