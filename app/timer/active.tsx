@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Vibration, StyleSheet } from 'react-native';
+import { View, Text, Vibration, StyleSheet, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import BackButton from '../../components/BackButton';
+
+const { width } = Dimensions.get('window');
+
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
 const ActiveTimerScreen = () => {
   const router = useRouter();
@@ -102,14 +110,44 @@ const ActiveTimerScreen = () => {
   }, [timeLeft, isBreak, currentSet]);
 
   return (
-    <View style={[styles.container, { backgroundColor: isBreak ? 'green' : 'red' }]}>
+    <View style={[styles.container, { backgroundColor: isBreak ? '#4CAF50' : '#FF5252' }]}>
       <BackButton />
-      <Text style={styles.title}>Set {currentSet} of {sets}</Text>
-      <Text style={styles.timerText}>{timeLeft}</Text>
-      <Text style={styles.subtitle}>{isBreak ? 'Rest Time' : "It's Workout Time! Keep Pushing"}</Text>
+
+      {/* Progress Info */}
+      <View style={styles.progressContainer}>
+        <Text style={styles.title}>Set {currentSet} of {sets}</Text>
+        <View style={styles.progressBar}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${(timeLeft / (isBreak ? Number(breakTime) : Number(setDuration))) * 100}%`,
+                backgroundColor: isBreak ? '#81C784' : '#FF8A80'
+              }
+            ]}
+          />
+        </View>
+      </View>
+
+      {/* Timer Display */}
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        <Text style={styles.phaseText}>
+          {isBreak ? '🧘‍♂️ Rest Time' : "💪 Let's Go!"}
+        </Text>
+      </View>
+
+      {/* Time Info */}
       <View style={styles.timeInfoContainer}>
-        <Text style={styles.timeInfo}>Time Passed: {Math.floor(totalTimePassed / 60)}:{(totalTimePassed % 60).toString().padStart(2, '0')}</Text>
-        <Text style={styles.timeInfo}>Time Left: {Math.floor(totalTimeLeft / 60)}:{(totalTimeLeft % 60).toString().padStart(2, '0')}</Text>
+        <View style={styles.timeInfoBox}>
+          <Text style={styles.timeInfoLabel}>Total Time</Text>
+          <Text style={styles.timeInfoValue}>{formatTime(totalTimePassed)}</Text>
+        </View>
+        <View style={styles.timeInfoDivider} />
+        <View style={styles.timeInfoBox}>
+          <Text style={styles.timeInfoLabel}>Remaining</Text>
+          <Text style={styles.timeInfoValue}>{formatTime(totalTimeLeft)}</Text>
+        </View>
       </View>
     </View>
   );
@@ -118,32 +156,75 @@ const ActiveTimerScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 100,
+  },
+  progressContainer: {
+    width: width * 0.9,
     alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+    marginBottom: 15,
   },
-  timerText: {
-    fontSize: 50,
-    fontWeight: 'bold',
-    color: 'white',
+  progressBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 4,
+    overflow: 'hidden',
   },
-  subtitle: {
-    fontSize: 18,
-    color: 'white',
-    marginTop: 10,
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
   },
-  timeInfoContainer: {
-    marginTop: 20,
+  timerContainer: {
     alignItems: 'center',
   },
-  timeInfo: {
-    fontSize: 16,
+  timerText: {
+    fontSize: 80,
+    fontWeight: 'bold',
     color: 'white',
-    marginVertical: 5,
+    fontVariant: ['tabular-nums'],
+  },
+  phaseText: {
+    fontSize: 24,
+    color: 'white',
+    marginTop: 10,
+    fontWeight: '600',
+  },
+  timeInfoContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    padding: 20,
+    width: width * 0.9,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  timeInfoBox: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  timeInfoDivider: {
+    width: 1,
+    height: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    marginHorizontal: 15,
+  },
+  timeInfoLabel: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  timeInfoValue: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontVariant: ['tabular-nums'],
   },
 });
 

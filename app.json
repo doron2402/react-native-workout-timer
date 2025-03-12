@@ -8,7 +8,7 @@
     "splash": {
       "image": "./assets/images/splash-screen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#89a841"
     },
     "platforms": [
       "ios",
