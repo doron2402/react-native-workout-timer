@@ -51,3 +51,20 @@ Join our community of developers creating universal apps.
 
 
 ## Deploying the app
+- For deploying the app you can use `sh ./deploy.sh`
+
+## Deploy via Fastlane
+- Make sure to run `expo prebuild` to generate the `ios` and `android` directory.
+- Initialize Fastlane: `cd ios && fastlane init`
+- Configure the Fastfile:
+```ruby
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :deploy do
+    increment_build_number(xcodeproj: "SportTimer.xcodeproj")
+    build_app(scheme: "SportTimer")
+    upload_to_testflight
+  end
+end
+```
+- Run the Deployment: `fastlane ios deploy`

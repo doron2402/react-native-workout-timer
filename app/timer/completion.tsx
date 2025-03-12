@@ -1,43 +1,34 @@
 import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackButton from '../../components/BackButton';
+import { saveTimerRecord } from '../utils/storage';
 
 const CompletionScreen = () => {
   const router = useRouter();
-  const { sets, setDuration, breakTime } = useLocalSearchParams();
-
-
-  // Function to save completed timer to AsyncStorage
-  const saveToHistory = async () => {
-    try {
-      const newEntry = {
-        number_of_sets: Number(sets),
-        set_in_seconds: Number(setDuration),
-        break_in_seconds: Number(breakTime),
-        created_at: Date.now(),
-      };
-
-      const existingHistory = await AsyncStorage.getItem('timerHistory');
-      const historyArray = existingHistory ? JSON.parse(existingHistory) : [];
-
-      historyArray.push(newEntry);
-      await AsyncStorage.setItem('timerHistory', JSON.stringify(historyArray));
-    } catch (error) {
-      console.error('Error saving history:', error);
-    }
-  };
+  const params = useLocalSearchParams<{
+    sets: string;
+    setDuration: string;
+    breakTime: string;
+  }>();
 
   useEffect(() => {
-    saveToHistory();
+    // Save the completed timer record
+    saveTimerRecord({
+      sets: params.sets,
+      setDuration: params.setDuration,
+      breakTime: params.breakTime,
+    });
   }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: 'blue' }]}>
-      <BackButton />
       <Text style={styles.timerText}>Set Completed!</Text>
-      <Button title="Back to Timer" onPress={() => router.push('/timer/start')} />
+      <TouchableOpacity
+        style={[styles.button, styles.backToHome]}
+        onPress={() => router.replace('/')}
+      >
+        <Text style={styles.buttonText}>Back to Home</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -53,6 +44,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
+  button: {
+    backgroundColor: '#FF5252',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  backToHome: {
+    padding: 30
+  }
 });
 
 export default CompletionScreen;

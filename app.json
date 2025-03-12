@@ -2,53 +2,41 @@
   "expo": {
     "name": "Sport Timer",
     "slug": "sport-timer",
-    "version": "1.4.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon.png",
+    "scheme": "sport-timer",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/splash-screen.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#89a841"
+      "backgroundColor": "#ffffff"
     },
-    "platforms": [
-      "ios",
-      "android"
+    "assetBundlePatterns": [
+      "**/*"
     ],
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.segaldoron.sporttimer",
-      "buildNumber": "1.0.0",
+      "buildNumber": "1",
       "infoPlist": {
+        "UIBackgroundModes": [
+          "audio",
+          "audio"
+        ],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.segaldoron.sporttimer",
-      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/app-icon.png",
         "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      },
+      "package": "com.segaldoron.sporttimer",
+      "versionCode": 1
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true

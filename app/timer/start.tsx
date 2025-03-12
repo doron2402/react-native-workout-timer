@@ -216,8 +216,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: 18,
+    marginBottom: 4,
+    fontWeight: "500",
     alignSelf: 'flex-start',
     marginLeft: '10%',
   },
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   timeButtonText: {
-    fontSize: 18,
+    fontSize: 20,
     textAlign: 'center',
   },
   modalContainer: {
@@ -275,8 +276,10 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    paddingTop: 5,
+    paddingBottom: 5,
+    fontWeight: '800',
     textAlign: 'center',
   },
 });

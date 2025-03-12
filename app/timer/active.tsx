@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Vibration, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Vibration, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
-import BackButton from '../../components/BackButton';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -109,13 +109,47 @@ const ActiveTimerScreen = () => {
     }
   }, [timeLeft, isBreak, currentSet]);
 
+  const handleReset = () => {
+    Alert.alert(
+      'Reset Timer',
+      'Are you sure you want to reset the timer and return home?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => {
+            // Stop any playing sounds
+            if (breakStartSound) {
+              breakStartSound.stopAsync();
+            }
+            if (breakEndSound) {
+              breakEndSound.stopAsync();
+            }
+            // Navigate back to home
+            router.replace('/');
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: isBreak ? '#4CAF50' : '#FF5252' }]}>
-      <BackButton />
+      <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+        <MaterialCommunityIcons name="restart" size={24} color="white" />
+        <Text style={styles.resetText}>Reset</Text>
+      </TouchableOpacity>
 
       {/* Progress Info */}
       <View style={styles.progressContainer}>
         <Text style={styles.title}>Set {currentSet} of {sets}</Text>
+        <Text style={styles.subtitle}>
+          {isBreak ? '🧘‍♂️ Break' : '💪 Workout'}
+        </Text>
         <View style={styles.progressBar}>
           <View
             style={[
@@ -167,6 +201,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 15,
+  },
+  subtitle: {
+    fontSize: 24,
     color: 'white',
     marginBottom: 15,
   },
@@ -225,6 +264,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     fontVariant: ['tabular-nums'],
+  },
+  resetButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+  },
+  resetText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });
 

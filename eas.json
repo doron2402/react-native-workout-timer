@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 15.0.14",
+    "version": ">= 5.9.1",
     "appVersionSource": "remote"
   },
   "build": {
@@ -16,6 +16,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "doron2402@gmail.com",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "NDXNQ5M4K4"
+      }
+    }
   }
 }
